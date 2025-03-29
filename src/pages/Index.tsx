@@ -70,6 +70,15 @@ const Index = () => {
     <PageLayout>
       <div className="container mx-auto py-8">
         {/* Hero Section */}
+        <section className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">{translate('welcome')}</h1>
+          <p className="text-gray-600">
+            {translate('home')} {translate('features')} {translate('demo')} {translate('government')}
+          </p>
+          <div className="mt-6">
+            <Button>{translate('signIn')}</Button>
+          </div>
+        </section>
 
         {/* Weather Information */}
         <section className="mb-8">
