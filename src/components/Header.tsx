@@ -1,33 +1,39 @@
-
-import React from 'react';
-import { Moon, Sun } from 'lucide-react';
+import React from "react";
+import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Navigation from './Navigation';
-import LanguageSelector from './LanguageSelector';
+import Navigation from "./Navigation";
+import LanguageSelector from "./LanguageSelector";
 
 interface HeaderProps {
   toggleContrast?: () => void;
   isHighContrast?: boolean;
-  language?: 'english' | 'hindi' | 'kannada';
-  setLanguage?: React.Dispatch<React.SetStateAction<'english' | 'hindi' | 'kannada'>>;
+  language?: "english" | "hindi" | "kannada";
+  setLanguage?: React.Dispatch<
+    React.SetStateAction<"english" | "hindi" | "kannada">
+  >;
 }
 
-const Header: React.FC<HeaderProps> = ({ 
-  toggleContrast, 
+const Header: React.FC<HeaderProps> = ({
+  toggleContrast,
   isHighContrast,
   language,
-  setLanguage
+  setLanguage,
 }) => {
+
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 relative">
       <Navigation />
-      
+
       {/* Accessibility Controls */}
       {toggleContrast && (
         <div className="container mx-auto px-4 flex justify-end items-center py-2 bg-gray-50 dark:bg-gray-800 gap-3">
           {/* Language Selector */}
-          <LanguageSelector />
-          
+          <LanguageSelector
+            setLanguageParent={(e) => {
+              setLanguage(e);
+            }}
+          />
+
           {/* Contrast Toggle */}
           <Button
             variant="outline"

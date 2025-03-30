@@ -1,6 +1,5 @@
-
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Mic, MicOff, Volume2, Volume1 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
+import { Send, Mic, MicOff, Volume2, Volume1 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -11,7 +10,7 @@ interface Message {
 }
 
 interface ChatbotWidgetProps {
-  widgetLanguage?: 'english' | 'hindi' | 'kannada';
+  widgetLanguage?: "english" | "hindi" | "kannada";
   translations?: {
     title?: {
       english: string;
@@ -36,32 +35,22 @@ interface ChatbotWidgetProps {
   };
 }
 
-const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ 
-  widgetLanguage = 'english',
-  translations
+const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
+  widgetLanguage = "english",
+  translations,
 }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: translations?.greeting?.[widgetLanguage] || "नमस्ते! मैं आपका कृषि सहायक हूँ। आप मुझसे फसल, मौसम, या सरकारी योजनाओं के बारे में पूछ सकते हैं।",
+      text:
+        translations?.greeting?.[widgetLanguage] ||
+        "नमस्ते! मैं आपका कृषि सहायक हूँ। आप मुझसे फसल, मौसम, या सरकारी योजनाओं के बारे में पूछ सकते हैं।",
       isBot: true,
-      timestamp: new Date()
-    }
+      timestamp: new Date(),
+    },
   ]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  // Mock responses based on keywords
-  const mockResponses = {
-    'मौसम': 'आपके क्षेत्र में अगले 3 दिनों के लिए मौसम पूर्वानुमान यह है: आज - धूप, कल - आंशिक रूप से बादल, परसों - बारिश की संभावना।',
-    'फसल': 'इस मौसम में गेहूं, चना, और सरसों की बुवाई के लिए अच्छा समय है। क्या आप किसी विशेष फसल के बारे में जानकारी चाहते हैं?',
-    'योजना': 'किसानों के लिए प्रमुख सरकारी योजनाएँ हैं: प्रधानमंत्री किसान सम्मान निधि, प्रधानमंत्री फसल बीमा योजना, और किसान क्रेडिट कार्ड। किसी विशेष योजना के बारे में अधिक जानकारी के लिए पूछें।',
-    'बाजार': 'आपके निकटतम मंडी में वर्तमान कीमतें: गेहूं - ₹2150/क्विंटल, धान - ₹3200/क्विंटल, आलू - ₹1200/क्विंटल, प्याज - ₹1800/क्विंटल',
-    'weather': 'The weather forecast for your area for the next 3 days is: Today - Sunny, Tomorrow - Partly Cloudy, Day after - Chance of Rain.',
-    'crop': 'This season is good for planting wheat, chickpeas, and mustard. Would you like information about a specific crop?',
-    'scheme': 'Major government schemes for farmers include: PM Kisan Samman Nidhi, PM Crop Insurance Scheme, and Kisan Credit Card. Ask for more information about a specific scheme.',
-    'market': 'Current prices at your nearest mandi: Wheat - ₹2150/quintal, Rice - ₹3200/quintal, Potato - ₹1200/quintal, Onion - ₹1800/quintal',
-  };
 
   // Auto scroll to bottom when messages change
   useEffect(() => {
@@ -69,50 +58,48 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({
+      block: "nearest",
+      behavior: "smooth",
+    });
   };
-  
+
   const handleSendMessage = () => {
     if (!input.trim()) return;
-    
+
     // Add user message
     const userMessage = {
       text: input,
       isBot: false,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
-    
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    
-    // Simulate "typing" delay
-    setTimeout(() => {
-      // Check if message contains any keywords
-      let botResponse = "मुझे यह समझ नहीं आया। कृपया फसल, मौसम, बाजार या सरकारी योजनाओं के बारे में पूछें।";
-      
-      if (widgetLanguage === 'english') {
-        botResponse = "I didn't understand that. Please ask about crops, weather, markets, or government schemes.";
-      }
-      
-      // Check for keywords in Hindi and English
-      for (const [keyword, response] of Object.entries(mockResponses)) {
-        if (input.toLowerCase().includes(keyword.toLowerCase())) {
-          botResponse = response;
-          break;
-        }
-      }
-      
-      // Add bot response
-      const botMessage = {
-        text: botResponse,
-        isBot: true,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, botMessage]);
-    }, 1000);
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+
+    fetch("https://api-container-706781556411.us-central1.run.app/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: input,
+        language: widgetLanguage,
+      }),
+    })
+      .then((e) => e.json())
+      .then((e) => {
+        // Add bot response
+        const botMessage = {
+          text: e.reply,
+          isBot: true,
+          timestamp: new Date(),
+        };
+
+        setMessages((prev) => [...prev, botMessage]);
+      });
   };
-  
+
   const toggleRecording = () => {
     setIsRecording(!isRecording);
     // In a real implementation, this would use the Web Speech API
@@ -128,7 +115,7 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       alert("Voice recording stopped");
     }
   };
-  
+
   const speakText = (text: string) => {
     // In a real implementation, this would use the Web Speech API
     alert(`Speaking: ${text}`);
@@ -156,32 +143,37 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
           {getTitle()}
         </h3>
       </div>
-      
+
       <div className="flex-grow overflow-y-auto p-4">
         <div className="space-y-4">
           {messages.map((message, index) => (
-            <div 
-              key={index} 
-              className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
+            <div
+              key={index}
+              className={`flex ${
+                message.isBot ? "justify-start" : "justify-end"
+              }`}
             >
-              <div 
+              <div
                 className={`max-w-[80%] p-3 rounded-lg ${
-                  message.isBot 
-                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none' 
-                    : 'bg-primary text-white rounded-tr-none'
+                  message.isBot
+                    ? "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none"
+                    : "bg-primary text-white rounded-tr-none"
                 }`}
               >
                 <p className="text-sm font-noto">{message.text}</p>
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-xs opacity-70">
-                    {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    {message.timestamp.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
-                  
+
                   {message.isBot && (
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
                       onClick={() => speakText(message.text)}
                     >
                       <Volume1 className="h-3 w-3" />
@@ -191,37 +183,39 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
               </div>
             </div>
           ))}
-          <div ref={messagesEndRef} />
+          <div id="scrollToBottomRef" ref={messagesEndRef} />
         </div>
       </div>
-      
+
       <div className="border-t border-gray-200 dark:border-gray-700 p-3">
         <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="icon"
-            className={isRecording ? 'bg-red-100 text-red-600 border-red-300' : ''}
+            className={
+              isRecording ? "bg-red-100 text-red-600 border-red-300" : ""
+            }
             onClick={toggleRecording}
           >
             {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
           </Button>
-          
+
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={getPlaceholder()}
             className="min-h-10 font-noto"
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 handleSendMessage();
               }
             }}
           />
-          
-          <Button 
-            variant="default" 
-            size="icon" 
+
+          <Button
+            variant="default"
+            size="icon"
             onClick={handleSendMessage}
             disabled={!input.trim()}
           >

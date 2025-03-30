@@ -8,7 +8,7 @@ import { Lightbulb, Sprout, BugIcon, Droplets } from 'lucide-react';
 
 const AskExpert = () => {
   const [isHighContrast, setIsHighContrast] = useState(false);
-  const [language, setLanguage] = useState<'english' | 'hindi' | 'kannada'>('hindi');
+  const [language, setLanguage] = useState<'english' | 'hindi' | 'kannada'>('english');
 
   const toggleContrast = () => {
     setIsHighContrast(!isHighContrast);
@@ -17,7 +17,7 @@ const AskExpert = () => {
 
   return (
     <div className={`min-h-screen flex flex-col ${isHighContrast ? 'high-contrast' : ''}`}>
-      <Header 
+      <Header
         toggleContrast={toggleContrast} 
         isHighContrast={isHighContrast}
         language={language}
@@ -45,7 +45,7 @@ const AskExpert = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
-              <ChatbotWidget />
+              <ChatbotWidget widgetLanguage={language} />
             </div>
             
             <div className="space-y-6">
