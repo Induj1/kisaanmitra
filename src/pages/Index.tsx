@@ -70,15 +70,17 @@ const Index = () => {
     <PageLayout>
       <div className="container mx-auto py-8">
         {/* Hero Section */}
-        <section className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">{translate('welcome')}</h1>
-          <p className="text-gray-600">
-            {translate('home')} {translate('features')} {translate('demo')} {translate('government')}
-          </p>
-          <div className="mt-6">
-            <Button>{translate('signIn')}</Button>
-          </div>
-        </section>
+        <section
+  className="bg-[url('/crop.jpg')] bg-cover bg-center text-center p-10 rounded-lg shadow-lg"
+>
+  <h1 className="text-4xl font-bold mb-4">{translate('welcome')}</h1>
+  <p className="text-white-600">
+    {translate('home')} {translate('features')} {translate('demo')} {translate('government')}
+  </p>
+  <div className="mt-6">
+  </div>
+</section>
+
 
         {/* Weather Information */}
         <section className="mb-8">
