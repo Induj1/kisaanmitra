@@ -35,6 +35,9 @@ import LiveDataWidget from "@/components/LiveDataWidget";
 import MapPlanner from "@/components/MapPlanner";
 import { supabase } from "@/integrations/supabase/client";
 
+const apiUrl = "https://api-container-706781556411.us-central1.run.app";
+//const apiUrl = "http://10.12.10.181:8080";
+
 const FarmPlanner = () => {
   const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -115,31 +118,16 @@ const FarmPlanner = () => {
   };
 
   async function callOpenAI(userMessage) {
-    const apiKey =
-      "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"; // Replace with your API key
-    const apiUrl = "https://api.openai.com/v1/chat/completions";
-
-    const requestData = {
-      model: "gpt-4", // or "gpt-3.5-turbo"
-      messages: [
-        {
-          role: "system",
-          content:
-            "You will be given a crop and land size in acres. Provide acitonable insights on irrigation, fertilizer and pesticide usage. in short and direct manner. easy to understand. Keep it SHORT. also estimate the budgets in rupees for each, its catered towards INDIAN farmers. Do not at all include unnecessary text, Do not provide markdown format, just simple text and bullet points.",
-        },
-        { role: "user", content: userMessage },
-      ],
-      temperature: 0.7,
-    };
-
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch(`${apiUrl}/get-analysis`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify({
+          message: userMessage,
+          language: "english",
+        }),
       });
 
       const data = await response.json();
@@ -226,7 +214,7 @@ const FarmPlanner = () => {
     document.documentElement.classList.toggle("high-contrast");
   };
 
-  console.log(aiRec)
+  console.log(aiRec);
 
   return (
     <div
@@ -346,7 +334,7 @@ const FarmPlanner = () => {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <p style={{whiteSpace: "pre-wrap"}}>{aiRec}</p>
+                      <p style={{ whiteSpace: "pre-wrap" }}>{aiRec}</p>
                     </div>
                   )}
                 </CardContent>

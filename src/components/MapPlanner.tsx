@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Plus, Minus, Layers, CircleHelp } from "lucide-react";
 import LocationAccessPopup from "@/components/LocationAccessPopup";
 
+const apiUrl = "https://api-container-706781556411.us-central1.run.app";
+//const apiUrl = "http://10.12.10.181:8080";
+
 // This is a simplified implementation since we don't have actual map libraries
 const MapPlanner: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -72,31 +75,16 @@ const MapPlanner: React.FC = () => {
   };
 
   async function callOpenAI(userMessage) {
-    const apiKey =
-      "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"; // Replace with your API key
-    const apiUrl = "https://api.openai.com/v1/chat/completions";
-
-    const requestData = {
-      model: "gpt-4", // or "gpt-3.5-turbo"
-      messages: [
-        {
-          role: "system",
-          content:
-            "You will be given a crop. Give a comma separated list of similar crops, 5 max that can be grown on the same land and soil, not including the input crop. Do not at all include unnecessary text.",
-        },
-        { role: "user", content: userMessage },
-      ],
-      temperature: 0.7,
-    };
-
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch(`${apiUrl}/get-relevant-crops`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify({
+          message: userMessage,
+          language: "english",
+        }),
       });
 
       const data = await response.json();
@@ -114,19 +102,16 @@ const MapPlanner: React.FC = () => {
 
   useEffect(() => {
     if (latitude !== null && longitude !== null) {
-      fetch(
-        "https://api-container-706781556411.us-central1.run.app/predict-crop",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            lat: latitude,
-            long: longitude,
-          }),
-        }
-      )
+      fetch(`${apiUrl}/predict-crop`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lat: latitude,
+          long: longitude,
+        }),
+      })
         .then((e) => e.json())
         .then((e) => {
           setCrop(e.predicted_crop);
@@ -246,7 +231,9 @@ const MapPlanner: React.FC = () => {
                 </span>
               </h3>
               {extraCrops !== null ? (
-                <h3 className="text-md mt-2">More Recommendations:&nbsp;{extraCrops}</h3>
+                <h3 className="text-md mt-2">
+                  More Recommendations:&nbsp;{extraCrops}
+                </h3>
               ) : null}
             </>
           ) : null}

@@ -3,6 +3,9 @@ import { Send, Mic, MicOff, Volume2, Volume1 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
+const apiUrl = "https://api-container-706781556411.us-central1.run.app";
+//const apiUrl = "http://10.12.10.181:8080";
+
 interface Message {
   text: string;
   isBot: boolean;
@@ -77,7 +80,7 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
 
-    fetch("https://api-container-706781556411.us-central1.run.app/chat", {
+    fetch(`${apiUrl}/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
