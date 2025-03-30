@@ -19,6 +19,7 @@ const MapPlanner: React.FC = () => {
   const [showLocationPopup, setShowLocationPopup] = useState(false);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
+  const [extraCrops, setExtraCrops] = useState(null);
   const [activeLayers, setActiveLayers] = useState({
     satellite: true,
     soil: false,
@@ -70,6 +71,47 @@ const MapPlanner: React.FC = () => {
     }));
   };
 
+  async function callOpenAI(userMessage) {
+    const apiKey =
+      "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"; // Replace with your API key
+    const apiUrl = "https://api.openai.com/v1/chat/completions";
+
+    const requestData = {
+      model: "gpt-4", // or "gpt-3.5-turbo"
+      messages: [
+        {
+          role: "system",
+          content:
+            "You will be given a crop. Give a comma separated list of similar crops, 5 max that can be grown on the same land and soil, not including the input crop. Do not at all include unnecessary text.",
+        },
+        { role: "user", content: userMessage },
+      ],
+      temperature: 0.7,
+    };
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const botReply = data.choices[0].message.content;
+        setExtraCrops(botReply);
+      } else {
+        console.error("Error:", data);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  }
+
   useEffect(() => {
     if (latitude !== null && longitude !== null) {
       fetch(
@@ -88,6 +130,7 @@ const MapPlanner: React.FC = () => {
         .then((e) => e.json())
         .then((e) => {
           setCrop(e.predicted_crop);
+          callOpenAI(e.predicted_crop);
         });
     }
   }, [latitude, longitude]);
@@ -195,9 +238,17 @@ const MapPlanner: React.FC = () => {
         <div className="text-center text-gray-600">
           <h1 className="text-xl mt-2">AI Based Analysis</h1>
           {crop !== null ? (
-            <h3 className="text-2xl mt-2">
-              Recommended Crop: <span className="font-semibold">{crop.charAt(0).toUpperCase() + crop.slice(1)}</span>
-            </h3>
+            <>
+              <h3 className="text-2xl mt-2">
+                Recommended Crop:{" "}
+                <span className="font-semibold">
+                  {crop.charAt(0).toUpperCase() + crop.slice(1)}
+                </span>
+              </h3>
+              {extraCrops !== null ? (
+                <h3 className="text-md mt-2">More Recommendations:&nbsp;{extraCrops}</h3>
+              ) : null}
+            </>
           ) : null}
         </div>
       </CardFooter>
