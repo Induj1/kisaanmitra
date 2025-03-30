@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6622492 (iot)
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+<<<<<<< HEAD
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
@@ -15,6 +19,21 @@ const Dashboard = () => {
   const { user, isNewUser, setIsNewUser } = useAuth();
   const { language, translate } = useLanguage();
   const [showLocationPopup, setShowLocationPopup] = useState(false);
+=======
+import PageLayout from '@/components/PageLayout';
+import LocationAccessPopup from '@/components/LocationAccessPopup';
+import SensorDataWidget from '@/components/SensorDataWidget';
+import DeviceConnectionDialog from '@/components/DeviceConnectionDialog';
+import { Cloud, Tractor, BarChart4, Lightbulb, ShoppingCart, Droplets, Calendar, SlidersHorizontal, Wifi } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+
+const Dashboard = () => {
+  const { user, isNewUser, setIsNewUser } = useAuth();
+  const { translate } = useLanguage();
+  const [showLocationPopup, setShowLocationPopup] = useState(false);
+  const [showDeviceDialog, setShowDeviceDialog] = useState(false);
+>>>>>>> 6622492 (iot)
   const [locationGranted, setLocationGranted] = useState(false);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
@@ -82,7 +101,11 @@ const Dashboard = () => {
     },
     {
       icon: BarChart4,
+<<<<<<< HEAD
       title: translate('live updates'),
+=======
+      title: translate('marketplace'),
+>>>>>>> 6622492 (iot)
       description: translate('checkCropPrices'),
       route: '/market-prices',
       color: 'bg-amber-500',
@@ -127,6 +150,7 @@ const Dashboard = () => {
   return (
     <PageLayout>
       <div className="container mx-auto">
+<<<<<<< HEAD
         <div className="mb-8">
           <h1 className="text-2xl font-bold">
             {translate('welcome')}
@@ -134,6 +158,30 @@ const Dashboard = () => {
           <p className="text-gray-600 dark:text-gray-400">
             {translate('personalizedAssistant')}
           </p>
+=======
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">
+              {translate('welcome')}
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              {translate('personalizedAssistant')}
+            </p>
+          </div>
+          
+          <Button 
+            onClick={() => setShowDeviceDialog(true)}
+            className="bg-blue-500 hover:bg-blue-600"
+          >
+            <Wifi className="mr-2" size={18} />
+            Connect Device
+          </Button>
+        </div>
+
+        {/* Sensor Data Widget */}
+        <div className="mb-8">
+          <SensorDataWidget />
+>>>>>>> 6622492 (iot)
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -159,8 +207,21 @@ const Dashboard = () => {
         onOpenChange={setShowLocationPopup}
         onLocationGranted={handleLocationGranted}
       />
+<<<<<<< HEAD
+=======
+
+      {/* Device Connection Dialog */}
+      <DeviceConnectionDialog
+        open={showDeviceDialog}
+        onOpenChange={setShowDeviceDialog}
+      />
+>>>>>>> 6622492 (iot)
     </PageLayout>
   );
 };
 
+<<<<<<< HEAD
 export default Dashboard;
+=======
+export default Dashboard;
+>>>>>>> 6622492 (iot)
